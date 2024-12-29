@@ -42,11 +42,11 @@ const taskSchema = new mongoose.Schema({
   versionKey: false
 });
 
+
+
 taskSchema.loadClass(TaskClass);
 
-taskSchema.pre('save', async (next) => {
-  next();
-});
+
 
 const Task = mongoose.model('Task', taskSchema);
 export default Task;

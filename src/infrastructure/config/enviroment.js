@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 
-// Configuramos dotenv al inicio
 dotenv.config();
 
-// Mantenemos la misma estructura de configuración
 const config = {
   server: {
     port: process.env.PORT || 3000,
@@ -11,7 +9,7 @@ const config = {
     apiPrefix: process.env.API_PREFIX || '/api'
   },
   database: {
-    url: process.env.MONGODB_URI || 'mongodb://localhost:27017/task-manager'
+    url: process.env.MONGODB_URI || 'mongodb://localhost:27017/task_manager'
   },
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localgost:3000'

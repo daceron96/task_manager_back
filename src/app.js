@@ -1,14 +1,47 @@
-const express = require('express');
-const { config, validateConfig } = require('./infrastructure/config');
+import express from 'express';
+import cors from 'cors';
+import createError from 'http-errors';
+import { logger } from './infrastructure/logging/logger.js';
+import { createTaskRouter } from './infrastructure/http/routes/taskRoutes.js';
+import connectDB from './infrastructure/database/mongo.js'
 
-validateConfig()
 
-const app =  express();
+const app = express();
+
+connectDB();
+
+app.use(cors({
+  origin: 'http://localhost:3000', 
+}));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const routes = require('./interfaces/routes');
+app.use((req, res, next) => {
+  logger.info('Petición recibida', {
+    method: req.method,
+    path: req.path
+  });
+  next();
+});
 
-app.use(config.server.apiPrefix, routes);
+app.use('/api', createTaskRouter());
 
-module.exports = app;
+app.use((req, res, next) => {
+  next(createError(404, 'Ruta no encontrada'));
+});
+
+app.use((err, req, res, next) => {
+  logger.error('Error en la aplicación', {
+    error: err.message,
+    path: req.path,
+    method: req.method
+  });
+
+  res.status(err.status || 500).json({
+    success: false,
+    error: err.message || 'Error interno del servidor'
+  });
+});
+
+export default app;
